@@ -1,1 +1,1 @@
-module foodji_assignment
+module foodjiassignment

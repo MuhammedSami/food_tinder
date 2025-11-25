@@ -1,0 +1,31 @@
+# Binaries and build output
+/bin/
+/build/
+/dist/
+*.exe
+*.out
+*.test
+
+# Dependency directories (if any)
+vendor/
+
+# Go coverage & test output
+*.cover
+coverage.out
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+
+# Environment & config files
+.env
+*.local
+config.yaml
