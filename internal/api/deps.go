@@ -1,4 +1,5 @@
 package api
 
-type repo interface {
+type manager interface {
+	CreateSession() (string, error)
 }

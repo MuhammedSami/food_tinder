@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"foodjiassignment/config"
 	"foodjiassignment/internal/api"
+	apiErr "foodjiassignment/internal/api/errors"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -15,24 +16,24 @@ import (
 	"time"
 )
 
-type APP struct {
-	API    *api.Manager
+type App struct {
+	API    *api.APIInterface
 	DB     *gorm.DB
 	Config *config.Config
 }
 
-func NewApp(db *gorm.DB, cfg *config.Config) *APP {
-	app := &APP{
+func NewApp(db *gorm.DB, cfg *config.Config) *App {
+	app := &App{
 		DB:     db,
 		Config: cfg,
 	}
 
-	app.API = api.NewManager(app.GetTinderFoodRepo())
+	app.API = api.NewApi(app.GetTinderFoodManager(), apiErr.NewApiError())
 
 	return app
 }
 
-func (a *APP) ExposeWithGracefulShutDown(ctx context.Context) error {
+func (a *App) ExposeWithGracefulShutDown(ctx context.Context) error {
 	r := a.API.RegisterHandlers()
 
 	server := &http.Server{

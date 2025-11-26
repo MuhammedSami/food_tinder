@@ -3,21 +3,34 @@ package api
 
 import (
 	"encoding/json"
+	"foodjiassignment/internal/api/errors"
 	"foodjiassignment/internal/api/models"
 	"net/http"
 )
 
-func (a *Manager) CreateSession(w http.ResponseWriter, r *http.Request) {
+func (a *APIInterface) CreateSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	resp := models.SessionResponse{
-		SessionId: "",
+	sess, err := a.tinderFoodMgr.CreateSession()
+	if err != nil {
+		a.apiError.FailWithMessage(w, errors.Error{
+			Message:    "failed to encode response",
+			StatusCode: http.StatusInternalServerError,
+		})
+
+		return
 	}
 
-	err := json.NewEncoder(w).Encode(resp)
+	resp := models.SessionResponse{
+		SessionId: sess,
+	}
+
+	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message":"failed to encode response"}`))
+		a.apiError.FailWithMessage(w, errors.Error{
+			Message:    "failed to encode response",
+			StatusCode: http.StatusInternalServerError,
+		})
 
 		return
 	}

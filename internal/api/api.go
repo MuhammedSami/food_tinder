@@ -1,23 +1,27 @@
 package api
 
 import (
+	"foodjiassignment/internal/api/errors"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
-type Manager struct {
-	tinderFoodRepo repo
+type APIInterface struct {
+	tinderFoodMgr manager
+	apiError      *errors.ApiError
 }
 
-func NewManager(
-	tinderFoodRepo repo,
-) *Manager {
-	return &Manager{
-		tinderFoodRepo: tinderFoodRepo,
+func NewApi(
+	tinderFoodMgr manager,
+	errTransformer *errors.ApiError,
+) *APIInterface {
+	return &APIInterface{
+		tinderFoodMgr: tinderFoodMgr,
+		apiError:      errTransformer,
 	}
 }
 
-func (a *Manager) RegisterHandlers() http.Handler {
+func (a *APIInterface) RegisterHandlers() http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/session", a.CreateSession)

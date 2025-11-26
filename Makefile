@@ -1,3 +1,5 @@
+include db.mk
+
 APP_NAME := FoodTinder
 
 .PHONY: up down restart ps build run test lint

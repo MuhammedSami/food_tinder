@@ -62,7 +62,6 @@ func TestAPIEndpoints(t *testing.T) {
 				}
 
 				assert.NotNil(t, result.SessionId)
-
 			},
 		},
 	}

@@ -61,7 +61,7 @@ func NewConfig() (*Config, error) {
 		flag.Parse()
 	}
 
-	// check if env has it
+	// check if env has it, we can use tag based env resolving(with reflection) but I skip for now
 	if dbName := os.Getenv("DB_NAME"); dbName != "" {
 		cfg.DB.DBName = dbName
 	}
