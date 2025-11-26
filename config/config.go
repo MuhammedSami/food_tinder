@@ -17,13 +17,20 @@ type DBConn struct {
 	Port     int    `yaml:"port"`
 }
 
+type RedisConn struct {
+	Host     string
+	Port     int
+	Password string
+}
+
 type API struct {
 	Port int `yaml:"port"`
 }
 
 type Config struct {
-	Api API    `yaml:"api"`
-	DB  DBConn `yaml:"db"`
+	Api   API       `yaml:"api"`
+	DB    DBConn    `yaml:"db"`
+	Redis RedisConn `yaml:"redis"`
 }
 
 // use this if config needs any other validation

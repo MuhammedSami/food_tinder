@@ -1,9 +1,10 @@
 CREATE TABLE product_votes (
        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
        product_id uuid NOT NULL,
+       session_id uuid NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+       machine_id uuid,
        product_name text NOT NULL,
        liked boolean NOT NULL,
-       session_id uuid NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
        created_at timestamptz NOT NULL DEFAULT now(),
        updated_at timestamptz NOT NULL DEFAULT now()
 );

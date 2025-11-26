@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
-type repo interface {
+type sessionRepo interface {
 	CreateSession(expiresAt *time.Time) (*models.Session, error)
+	GetSession(sessionID string) (*models.Session, error)
+}
+
+type productVoteRepo interface {
+	UpsertProductVote(vote *models.ProductVote) error
 }

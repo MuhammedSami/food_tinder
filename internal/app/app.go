@@ -28,7 +28,13 @@ func NewApp(db *gorm.DB, cfg *config.Config) *App {
 		Config: cfg,
 	}
 
-	app.API = api.NewApi(app.GetTinderFoodManager(), apiErr.NewApiError())
+	redisClient := app.GetRedisClient(cfg.Redis)
+
+	app.API = api.NewApi(
+		app.GetTinderFoodManager(),
+		apiErr.NewApiError(),
+		redisClient,
+	)
 
 	return app
 }

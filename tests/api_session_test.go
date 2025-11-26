@@ -14,8 +14,8 @@ import (
 	"testing"
 )
 
-func TestAPIEndpoints(t *testing.T) {
-	cfg := config.Config{
+func defaultConfig() *config.Config {
+	return &config.Config{
 		Api: config.API{
 			Port: 8080,
 		},
@@ -27,10 +27,14 @@ func TestAPIEndpoints(t *testing.T) {
 			Port:     5432,
 		},
 	}
+}
+
+func TestAPIEndpoints(t *testing.T) {
+	cfg := defaultConfig()
 
 	db := storage.NewDb(cfg.DB)
 
-	a := app.NewApp(db, &cfg)
+	a := app.NewApp(db, cfg)
 
 	ts := httptest.NewServer(a.API.RegisterHandlers())
 	defer ts.Close()
@@ -45,7 +49,7 @@ func TestAPIEndpoints(t *testing.T) {
 		{
 			name:           "Get session id",
 			method:         http.MethodPost,
-			endpoint:       "/session",
+			endpoint:       "/sessions",
 			expectedStatus: http.StatusOK,
 			extraCaseChecks: func(resp *http.Response) {
 				bodyBytes, err := io.ReadAll(resp.Body)
