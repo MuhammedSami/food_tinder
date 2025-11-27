@@ -129,3 +129,22 @@ func (a *APIInterface) GetVotesForSession(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 	w.Write(respBytes)
 }
+
+func (a *APIInterface) GetAverageScores(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	avgScores, err := a.tinderFoodMgr.GetAverageScores()
+	if err != nil {
+		a.apiError.FailWithMessage(w, errors.Error{
+			Message:    fmt.Sprintf("failed to get average score per prodcut err: %s", err),
+			StatusCode: http.StatusBadRequest,
+		})
+
+		return
+	}
+
+	respBytes, _ := json.Marshal(avgScores)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(respBytes)
+}

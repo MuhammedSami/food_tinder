@@ -35,6 +35,7 @@ func (a *APIInterface) RegisterHandlers() http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/sessions", a.CreateSession)
+	r.Get("/product-scores", a.GetAverageScores)
 
 	r.Group(func(pr chi.Router) {
 		pr.Use(a.RequireSession)

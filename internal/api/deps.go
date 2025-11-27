@@ -12,5 +12,6 @@ type manager interface {
 	UpsertVote(ctx context.Context, productVote apiModels.UpsertProductVoteRequest) error
 
 	GetSession(sessionId uuid.UUID) (*models.Session, error)
+	GetAverageScores() ([]models.ProductScore, error)
 	GetVotesBySession(ctx context.Context, sessionId uuid.UUID) ([]models.ProductVote, error)
 }

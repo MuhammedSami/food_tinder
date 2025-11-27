@@ -81,3 +81,12 @@ func (m *Manager) GetVotesBySession(ctx context.Context, sessionId uuid.UUID) ([
 
 	return votes, nil
 }
+
+func (m *Manager) GetAverageScores() ([]models.ProductScore, error) {
+	avgScores, err := m.productVoteRepo.GetAverageScores()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get average score")
+	}
+
+	return avgScores, nil
+}

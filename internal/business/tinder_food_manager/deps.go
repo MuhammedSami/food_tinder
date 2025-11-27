@@ -14,4 +14,5 @@ type sessionRepo interface {
 type productVoteRepo interface {
 	UpsertProductVote(vote *models.ProductVote) error
 	GetVotesBySessionId(sessionID uuid.UUID) ([]models.ProductVote, error)
+	GetAverageScores() ([]models.ProductScore, error)
 }

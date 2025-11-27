@@ -24,3 +24,11 @@ type ProductVote struct {
 
 	Session Session `gorm:"foreignKey:SessionID;references:ID;constraint:OnDelete:CASCADE"`
 }
+
+type ProductScore struct {
+	ProductID   uuid.UUID `json:"productId"`
+	ProductName string    `json:"productName"`
+	AvgScore    float64   `json:"avgScore"`
+	TotalVotes  int       `json:"totalVotes"`
+	Likes       int       `json:"likes"`
+}
