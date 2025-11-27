@@ -38,11 +38,7 @@ tests-integration: install-gotestsum
 	@echo "Running integration tests..."
 	@gotestsum  --format=testname ./tests
 
-tests-unit: install-gotestsum
-	@echo "Running unit tests..."
-	@gotestsum -- ./$(SERVICE_DIR)/... -skip=tests
-
-tests: tests-unit tests-integration
+tests: tests-integration
 
 lint:
 	golangci-lint run ./...

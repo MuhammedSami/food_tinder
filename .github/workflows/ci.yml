@@ -1,0 +1,55 @@
+name: Message Processor - Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  general-checks:
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Start required services (Docker Compose)
+        run: make up
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL and Redis to be ready..."
+          sleep 10
+
+      - name: Install migrate CLI
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/latest/download/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/local/bin/
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+      - name: Run migrations
+        run: make migrate
+
+      - name: Run lint
+        run: make lint
+
+      - name: Run tests
+        run: make tests
+
+      - name: Stop and clean up
+        run: make down
