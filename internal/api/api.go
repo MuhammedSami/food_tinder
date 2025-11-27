@@ -11,6 +11,8 @@ import (
 	"net/http"
 )
 
+const sessionIDKey = "sessionID"
+
 type APIInterface struct {
 	tinderFoodMgr manager
 	apiError      *apiErrors.ApiError
@@ -86,7 +88,7 @@ func (a *APIInterface) RequireSession(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "sessionID", session.ID.String())
+		ctx := context.WithValue(r.Context(), sessionIDKey, session.ID.String()) //nolint:staticcheck
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

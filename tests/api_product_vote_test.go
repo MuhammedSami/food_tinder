@@ -52,6 +52,7 @@ func TestProductVoteAPI(t *testing.T) {
 	db.Create(&sessionModel)
 
 	productId := uuid.New()
+	productId2 := uuid.New()
 
 	tests := []struct {
 		name            string
@@ -59,13 +60,14 @@ func TestProductVoteAPI(t *testing.T) {
 		body            map[string]interface{}
 		endpoint        string
 		expectedStatus  int
+		sessionId       string
 		runBeforeCase   func()
 		extraCaseChecks func(resp *http.Response)
 	}{
 		{
 			name:           "Try upsert without session header",
 			method:         http.MethodPost,
-			endpoint:       "/products-vote",
+			endpoint:       "/product-votes",
 			expectedStatus: http.StatusBadRequest,
 			extraCaseChecks: func(resp *http.Response) {
 				result := convertResponseIntoErrorResponse(t, resp)
@@ -85,7 +87,8 @@ func TestProductVoteAPI(t *testing.T) {
 		{
 			name:           "user can vote for a product for the first time",
 			method:         http.MethodPost,
-			endpoint:       "/products-votes",
+			endpoint:       "/product-votes",
+			sessionId:      sessionModel.ID.String(),
 			expectedStatus: http.StatusOK,
 			body: map[string]interface{}{
 				"productId":   productId.String(),
@@ -108,17 +111,18 @@ func TestProductVoteAPI(t *testing.T) {
 		{
 			name:           "user is able to vote for same product",
 			method:         http.MethodPost,
-			endpoint:       "/products-votes",
+			sessionId:      sessionModel.ID.String(),
+			endpoint:       "/product-votes",
 			expectedStatus: http.StatusOK,
 			body: map[string]interface{}{
-				"productId":   productId.String(),
+				"productId":   productId2.String(),
 				"productName": "name-1",
 				"liked":       false,
 			},
 			runBeforeCase: func() {
 				name := "NAME-1"
 				err := db.Create(&models.ProductVote{
-					ProductID:   productId,
+					ProductID:   productId2,
 					SessionID:   sessionModel.ID,
 					ProductName: &name,
 					Liked:       true,
@@ -135,13 +139,13 @@ func TestProductVoteAPI(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, "vote saved for product", result.Message)
-				assert.Equal(t, productId.String(), result.ProductId)
+				assert.Equal(t, productId2.String(), result.ProductId)
 
 				var model *models.ProductVote
 
-				err = db.First(&model, "session_id = ? and product_id = ?", sessionModel.ID.String(), productId.String()).Error
+				err = db.First(&model, "session_id = ? and product_id = ?", sessionModel.ID.String(), productId2.String()).Error
 				require.NoError(t, err)
-				assert.Equal(t, productId, model.ProductID)
+				assert.Equal(t, productId2, model.ProductID)
 				assert.Equal(t, sessionModel.ID, model.SessionID)
 				assert.Equal(t, false, model.Liked)
 			},
@@ -174,8 +178,8 @@ func TestProductVoteAPI(t *testing.T) {
 				t.Fatalf("failed to create request: %v", err)
 			}
 
-			if sessionModel.ID.String() != "" {
-				req.Header.Set("X-Session-ID", sessionModel.ID.String())
+			if tt.sessionId != "" {
+				req.Header.Set("X-Session-ID", tt.sessionId)
 			}
 
 			resp, err = client.Do(req)

@@ -12,7 +12,7 @@ import (
 type Manager struct {
 	sessionRepo     sessionRepo
 	productVoteRepo productVoteRepo
-	redis           *redis.Client // I thought to use redis for caching session but I rolled back implementation
+	redis           *redis.Client //nolint:unused
 }
 
 func NewManager(

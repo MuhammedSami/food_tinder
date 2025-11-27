@@ -27,5 +27,5 @@ func NewApiError() *ApiError {
 
 func (e *ApiError) FailWithMessage(w http.ResponseWriter, err Error) {
 	w.WriteHeader(err.StatusCode)
-	w.Write(err.ToString())
+	w.Write(err.ToString()) //nolint:errcheck
 }
