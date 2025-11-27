@@ -5,14 +5,17 @@ GOTESTSUM := $(shell command -v gotestsum 2> /dev/null)
 
 APP_NAME := FoodTinder
 
+ifneq (,$(wildcard .env))
+include .env
+export $(shell sed 's/=.*//' .env | xargs)
+endif
+
 .PHONY: up down restart ps build run lint tests-integration tests-unit tests install-gotestsum
 
 environment:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
 		echo ".env created from .env.example"; \
-		include .env
-        export $(shell sed 's/=.*//' .env)
 	fi
 
 up:
@@ -31,8 +34,6 @@ ps:
 
 build:
 	go build -o $(APP_NAME) ./...
-
-environment:
 
 run: up
 	go run ./cmd/...
