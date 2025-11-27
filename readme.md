@@ -15,3 +15,19 @@ This backend is designed to support a lightweight, anonymous, swipe-based produc
 
 ## Voting flow diagram
 ![Voting Flow Diagram](./docs/voting-flow.png)
+
+### Start required services
+
+```
+make up
+```
+
+### Run migration files
+````
+make migrate
+````
+
+### Run the app
+````
+make run
+````
