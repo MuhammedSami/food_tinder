@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/MuhammedSami/food_tinder/badge.svg)](https://coveralls.io/github/MuhammedSami/food_tinder)
 # Food Tinder
 
 This backend is designed to support a lightweight, anonymous, swipe-based product voting experience that is intended to collect feedback on available food items.
@@ -8,7 +9,7 @@ This backend is designed to support a lightweight, anonymous, swipe-based produc
 
 ## Usage Scenario
 
-- We want to receive feedbacks for the foods we provide and we decide on tinder like pool for the foods.
+- We want to receive feedbacks for the foods we provide, and we decide on tinder like pool for the foods.
 - Instead of requiring accounts or authentication, the user provides feedback anonymously through a simple swipe or button(like/unlike) interaction.
 - As we know the list of vote might be long, we provide a button to the user to finish the voting.
 
