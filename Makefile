@@ -7,11 +7,14 @@ APP_NAME := FoodTinder
 
 .PHONY: up down restart ps build run lint tests-integration tests-unit tests install-gotestsum
 
-up:
+environment:
 	@if [ ! -f .env ]; then \
-		echo ".env not found, creating from .env.example"; \
 		cp .env.example .env; \
+		echo ".env created from .env.example"; \
 	fi
+
+up:
+	environment
 	docker compose up -d
 
 down:
