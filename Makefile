@@ -11,6 +11,8 @@ environment:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
 		echo ".env created from .env.example"; \
+		include .env
+        export $(shell sed 's/=.*//' .env)
 	fi
 
 up:
