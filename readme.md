@@ -1,21 +1,16 @@
 # Food Tinder
 
-This backend is designed to support a lightweight, anonymous, swipe-based product voting experience that is intended to collect feedback on food items available inside Foodji-style machines.
-
-
-## Usage Scenario
-
-- A user encounters a machine that offers food products.
-
-- The operator wants to collect feedback on how appealing these products are.
-
-- Instead of requiring accounts or authentication, the user provides feedback anonymously through a simple swipe interaction.
+This backend is designed to support a lightweight, anonymous, swipe-based product voting experience that is intended to collect feedback on available food items.
 
 ## How users access the voting flow
 
-- Users are shown a QR code near the machine.
+- Users are shown a QR code or given a link from via which they can be redirected to a web-app.
 
-- Scanning the QR code directs the user to a web-app where voting begins.
+## Usage Scenario
+
+- We want to receive feedbacks for the foods we provide and we decide on tinder like pool for the foods.
+- Instead of requiring accounts or authentication, the user provides feedback anonymously through a simple swipe or button(like/unlike) interaction.
+- As we know the list of vote might be long, we provide a button to the user to finish the voting.
 
 ## Voting flow diagram
 ![Voting Flow Diagram](./docs/voting-flow.png)
