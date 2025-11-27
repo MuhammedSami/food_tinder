@@ -1,8 +1,11 @@
 include db.mk
 
+# Ensure gotestsum is installed
+GOTESTSUM := $(shell command -v gotestsum 2> /dev/null)
+
 APP_NAME := FoodTinder
 
-.PHONY: up down restart ps build run test lint
+.PHONY: up down restart ps build run lint tests-integration tests-unit tests install-gotestsum
 
 up:
 	docker compose up -d
@@ -23,9 +26,23 @@ build:
 run: up
 	go run ./cmd/...
 
-test:
-	@echo "Running tests..."
-	go test ./...
+install-gotestsum:
+	@if [ -z "$(GOTESTSUM)" ]; then \
+		echo "Installing gotestsum..."; \
+		go install gotest.tools/gotestsum@latest; \
+	else \
+		echo "gotestsum is already installed"; \
+	fi
+
+tests-integration: install-gotestsum
+	@echo "Running integration tests..."
+	@gotestsum  --format=testname ./tests
+
+tests-unit: install-gotestsum
+	@echo "Running unit tests..."
+	@gotestsum -- ./$(SERVICE_DIR)/... -skip=tests
+
+tests: tests-unit tests-integration
 
 lint:
 	golangci-lint run ./...

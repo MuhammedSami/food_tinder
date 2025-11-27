@@ -45,9 +45,13 @@ func TestProductVoteAPI(t *testing.T) {
 
 	client := &http.Client{}
 
-	var globalSessionId string
+	// get a session id
+	sessionModel := models.Session{
+		ID: uuid.New(),
+	}
+	db.Create(&sessionModel)
 
-	productId := "34d7a483-e884-49f4-a2e5-d5e3469392a8"
+	productId := uuid.New()
 
 	tests := []struct {
 		name            string
@@ -79,22 +83,14 @@ func TestProductVoteAPI(t *testing.T) {
 			},
 		},
 		{
-			name:           "Try upsert with session id",
+			name:           "user can vote for a product for the first time",
 			method:         http.MethodPost,
 			endpoint:       "/product-votes/upsert",
 			expectedStatus: http.StatusOK,
 			body: map[string]interface{}{
-				"productId":   productId,
+				"productId":   productId.String(),
 				"productName": "name-1",
-				"like":        true,
-			},
-			runBeforeCase: func() {
-				sessionModel := models.Session{
-					ID: uuid.New(),
-				}
-				db.Create(&sessionModel)
-
-				globalSessionId = sessionModel.ID.String()
+				"liked":       true,
 			},
 			extraCaseChecks: func(resp *http.Response) {
 				bodyBytes, err := io.ReadAll(resp.Body)
@@ -103,13 +99,51 @@ func TestProductVoteAPI(t *testing.T) {
 				var result apiModels.UpsertProductVoteResponse
 
 				err = json.Unmarshal(bodyBytes, &result)
-				if err != nil {
-					fmt.Println("failed to unmarshal response:", err)
-					return
-				}
+				require.NoError(t, err)
 
 				assert.Equal(t, "vote saved for product", result.Message)
-				assert.Equal(t, productId, result.ProductId)
+				assert.Equal(t, productId.String(), result.ProductId)
+			},
+		},
+		{
+			name:           "user is able to vote for same product",
+			method:         http.MethodPost,
+			endpoint:       "/product-votes/upsert",
+			expectedStatus: http.StatusOK,
+			body: map[string]interface{}{
+				"productId":   productId.String(),
+				"productName": "name-1",
+				"liked":       false,
+			},
+			runBeforeCase: func() {
+				name := "NAME-1"
+				err := db.Create(&models.ProductVote{
+					ProductID:   productId,
+					SessionID:   sessionModel.ID,
+					ProductName: &name,
+					Liked:       true,
+				}).Error
+				require.NoError(t, err)
+			},
+			extraCaseChecks: func(resp *http.Response) {
+				bodyBytes, err := io.ReadAll(resp.Body)
+				require.NoError(t, err)
+
+				var result apiModels.UpsertProductVoteResponse
+
+				err = json.Unmarshal(bodyBytes, &result)
+				require.NoError(t, err)
+
+				assert.Equal(t, "vote saved for product", result.Message)
+				assert.Equal(t, productId.String(), result.ProductId)
+
+				var model *models.ProductVote
+
+				err = db.First(&model, "session_id = ? and product_id = ?", sessionModel.ID.String(), productId.String()).Error
+				require.NoError(t, err)
+				assert.Equal(t, productId, model.ProductID)
+				assert.Equal(t, sessionModel.ID, model.SessionID)
+				assert.Equal(t, false, model.Liked)
 			},
 		},
 	}
@@ -140,8 +174,8 @@ func TestProductVoteAPI(t *testing.T) {
 				t.Fatalf("failed to create request: %v", err)
 			}
 
-			if globalSessionId != "" {
-				req.Header.Set("X-Session-ID", globalSessionId)
+			if sessionModel.ID.String() != "" {
+				req.Header.Set("X-Session-ID", sessionModel.ID.String())
 			}
 
 			resp, err = client.Do(req)

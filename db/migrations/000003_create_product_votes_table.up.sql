@@ -3,7 +3,7 @@ CREATE TABLE product_votes (
        product_id uuid NOT NULL,
        session_id uuid NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
        machine_id uuid,
-       product_name text NOT NULL,
+       product_name text,
        liked boolean NOT NULL,
        created_at timestamptz NOT NULL DEFAULT now(),
        updated_at timestamptz NOT NULL DEFAULT now()

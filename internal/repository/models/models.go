@@ -17,7 +17,7 @@ type ProductVote struct {
 	ProductID   uuid.UUID  `gorm:"type:uuid;not null;index:idx_session_product,unique"`
 	SessionID   uuid.UUID  `gorm:"type:uuid;not null;index:idx_session_product,unique"`
 	MachineID   *uuid.UUID `gorm:"type:uuid;"`
-	ProductName string     `gorm:"type:text;not null"`
+	ProductName *string    `gorm:"type:text;not null"`
 	Liked       bool       `gorm:"not null"`
 	CreatedAt   time.Time  `gorm:"not null;default:now()"`
 	UpdatedAt   time.Time  `gorm:"not null;default:now()"`

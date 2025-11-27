@@ -6,7 +6,7 @@ type SessionResponse struct {
 
 type UpsertProductVoteRequest struct {
 	ProductId   string  `json:"productId"`
-	ProductName string  `json:"productName"`
+	ProductName *string `json:"productName"`
 	MachineId   *string `json:"machineId"`
 	SessionId   string  `json:"-"`
 	Liked       bool    `json:"liked"`
