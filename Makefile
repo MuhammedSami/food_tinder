@@ -18,8 +18,8 @@ environment:
 		echo ".env created from .env.example"; \
 	fi
 
-up:
-	environment
+up: environment
+	@echo "running docker compose"
 	docker compose up -d
 
 down:
