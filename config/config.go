@@ -73,6 +73,10 @@ func NewConfig() (*Config, error) {
 		cfg.DB.DBName = dbName
 	}
 
+	if dbHost := os.Getenv("DB_HOST"); dbHost != "" {
+		cfg.DB.Host = dbHost
+	}
+
 	if dbPass := os.Getenv("DB_PASS"); dbPass != "" || *dbPassword != "" {
 		cfg.DB.Password = dbPass
 	}

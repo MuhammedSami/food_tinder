@@ -1,0 +1,5 @@
+openapi: 3.0.3
+info:
+  title: Food Tinder API
+  version: 1.0.0
+  description: API to manage food swipe mechanism

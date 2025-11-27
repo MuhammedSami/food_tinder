@@ -7,6 +7,7 @@ include .env
 export $(shell sed 's/=.*//' .env)
 
 include db.mk
+include build.mk
 
 # Ensure gotestsum is installed
 GOTESTSUM := $(shell command -v gotestsum 2> /dev/null)
@@ -50,5 +51,5 @@ tests: tests-integration
 lint:
 	golangci-lint run ./...
 
-
-## dont forget adding swagger
+swagger-ui:
+	docker run --rm -p 8090:8080 -v `pwd`/docs:/usr/share/nginx/html/docs -e URL=/docs/swagger.yaml swaggerapi/swagger-ui

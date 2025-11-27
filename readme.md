@@ -16,6 +16,9 @@ This backend is designed to support a lightweight, anonymous, swipe-based produc
 ## Voting flow diagram
 ![Voting Flow Diagram](./docs/voting-flow.png)
 
+## Proposed DB Schema
+![Voting Flow Diagram](./docs/db-schema.png)
+
 ### Start required services
 
 ```
@@ -31,3 +34,22 @@ make migrate
 ````
 make run
 ````
+
+### Run tests
+
+The backend app contains only integration tests which gives the possibility to have a higher coverage
+
+````
+make tests
+````
+
+![Voting Flow Diagram](./docs/test-result.png)
+
+
+## Deployment
+
+The backend APP is deployed on AWS EC2 instance on the following IP
+
+```
+http://13.60.225.102/
+```
