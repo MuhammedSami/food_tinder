@@ -34,13 +34,13 @@ func (m *Manager) CreateSession(ctx context.Context) (string, error) {
 	return session.ID.String(), nil
 }
 
-func (m *Manager) GetSession(sessionId string) (string, error) {
+func (m *Manager) GetSession(sessionId uuid.UUID) (*models.Session, error) {
 	session, err := m.sessionRepo.GetSession(sessionId)
 	if err != nil {
-		return "", fmt.Errorf("failed to create session err:%w", err)
+		return nil, fmt.Errorf("failed to create session err:%w", err)
 	}
 
-	return session.ID.String(), nil
+	return session, nil
 }
 
 func (m *Manager) UpsertVote(ctx context.Context, productVote apiModels.UpsertProductVoteRequest) error {
@@ -71,4 +71,13 @@ func (m *Manager) UpsertVote(ctx context.Context, productVote apiModels.UpsertPr
 	}
 
 	return m.productVoteRepo.UpsertProductVote(&productVoteModel)
+}
+
+func (m *Manager) GetVotesBySession(ctx context.Context, sessionId uuid.UUID) ([]models.ProductVote, error) {
+	votes, err := m.productVoteRepo.GetVotesBySessionId(sessionId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get votes per session")
+	}
+
+	return votes, nil
 }

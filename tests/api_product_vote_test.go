@@ -65,7 +65,7 @@ func TestProductVoteAPI(t *testing.T) {
 		{
 			name:           "Try upsert without session header",
 			method:         http.MethodPost,
-			endpoint:       "/product-votes/upsert",
+			endpoint:       "/products-vote",
 			expectedStatus: http.StatusBadRequest,
 			extraCaseChecks: func(resp *http.Response) {
 				result := convertResponseIntoErrorResponse(t, resp)
@@ -85,7 +85,7 @@ func TestProductVoteAPI(t *testing.T) {
 		{
 			name:           "user can vote for a product for the first time",
 			method:         http.MethodPost,
-			endpoint:       "/product-votes/upsert",
+			endpoint:       "/products-votes",
 			expectedStatus: http.StatusOK,
 			body: map[string]interface{}{
 				"productId":   productId.String(),
@@ -108,7 +108,7 @@ func TestProductVoteAPI(t *testing.T) {
 		{
 			name:           "user is able to vote for same product",
 			method:         http.MethodPost,
-			endpoint:       "/product-votes/upsert",
+			endpoint:       "/products-votes",
 			expectedStatus: http.StatusOK,
 			body: map[string]interface{}{
 				"productId":   productId.String(),

@@ -16,3 +16,10 @@ type UpsertProductVoteResponse struct {
 	ProductId string `json:"productId"`
 	Message   string `json:"message"`
 }
+
+type GetSessionProductVotesResponse struct {
+	ProductId   string  `json:"productId"`
+	ProductName *string `json:"productName"`
+	Liked       bool    `json:"liked"`
+	CreatedAt   string  `json:"createdAt"`
+}

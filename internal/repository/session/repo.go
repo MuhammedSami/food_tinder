@@ -32,17 +32,12 @@ func (r *Repo) CreateSession(expiresAt *time.Time) (*models.Session, error) {
 	return session, nil
 }
 
-func (r *Repo) GetSession(sessionID string) (*models.Session, error) {
+func (r *Repo) GetSession(sessionID uuid.UUID) (*models.Session, error) {
 	var session models.Session
 
-	id, err := uuid.Parse(sessionID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid session ID: %w", err)
-	}
-
-	if err := r.db.First(&session, "id = ?", id).Error; err != nil {
+	if err := r.db.First(&session, "id = ?", sessionID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, modelsErr.NewNotFoundError(fmt.Sprintf("session id : %s, not found", id))
+			return nil, modelsErr.NewNotFoundError(fmt.Sprintf("session id : %s, not found", sessionID.String()))
 		}
 		return nil, err
 	}

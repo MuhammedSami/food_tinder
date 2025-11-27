@@ -2,6 +2,7 @@ package session
 
 import (
 	"foodjiassignment/internal/repository/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
@@ -30,4 +31,17 @@ func (r *Repo) UpsertProductVote(vote *models.ProductVote) error {
 			"updated_at":   time.Now(),
 		}),
 	}).Create(vote).Error
+}
+
+func (r *Repo) GetVotesBySessionId(sessionID uuid.UUID) ([]models.ProductVote, error) {
+	var votes []models.ProductVote
+
+	err := r.db.
+		Where("session_id = ?", sessionID).
+		Find(&votes).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return votes, nil
 }

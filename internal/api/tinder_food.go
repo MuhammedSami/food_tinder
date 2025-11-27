@@ -3,8 +3,10 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"foodjiassignment/internal/api/errors"
 	"foodjiassignment/internal/api/models"
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -67,7 +69,7 @@ func (a *APIInterface) Upsert(w http.ResponseWriter, r *http.Request) {
 	err := a.tinderFoodMgr.UpsertVote(ctx, payload)
 	if err != nil {
 		a.apiError.FailWithMessage(w, errors.Error{
-			Message:    "failed to upsert vote",
+			Message:    fmt.Sprintf("failed to upsert vote, err:%s", err),
 			StatusCode: http.StatusInternalServerError,
 		})
 		return
@@ -85,5 +87,45 @@ func (a *APIInterface) Upsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *APIInterface) GetVotesForSession(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
+	w.Header().Set("Content-Type", "application/json")
+
+	sessionIDStr := ctx.Value("sessionID")
+
+	sessionID, err := uuid.Parse(sessionIDStr.(string))
+	if err != nil {
+		a.apiError.FailWithMessage(w, errors.Error{
+			Message:    fmt.Sprintf("invalid session ID err: %s", err),
+			StatusCode: http.StatusBadRequest,
+		})
+
+		return
+	}
+
+	votes, err := a.tinderFoodMgr.GetVotesBySession(ctx, sessionID)
+	if err != nil {
+		a.apiError.FailWithMessage(w, errors.Error{
+			Message:    fmt.Sprintf("failed to get product votes for sesion:%s err: %s", sessionID.String(), err),
+			StatusCode: http.StatusBadRequest,
+		})
+
+		return
+	}
+
+	var response []models.GetSessionProductVotesResponse
+
+	for _, v := range votes {
+		response = append(response, models.GetSessionProductVotesResponse{
+			ProductId:   v.ProductID.String(),
+			ProductName: v.ProductName,
+			Liked:       v.Liked,
+			CreatedAt:   v.CreatedAt.String(),
+		})
+	}
+
+	respBytes, _ := json.Marshal(response)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(respBytes)
 }

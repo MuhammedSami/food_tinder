@@ -37,7 +37,7 @@ func (a *APIInterface) RegisterHandlers() http.Handler {
 	r.Group(func(pr chi.Router) {
 		pr.Use(a.RequireSession)
 
-		pr.Post("/product-votes/upsert", a.Upsert)
+		pr.Post("/product-votes", a.Upsert)
 		pr.Get("/product-votes", a.GetVotesForSession)
 	})
 
@@ -67,7 +67,7 @@ func (a *APIInterface) RequireSession(next http.Handler) http.Handler {
 			return
 		}
 
-		session, err := a.tinderFoodMgr.GetSession(sessionID.String())
+		session, err := a.tinderFoodMgr.GetSession(sessionID)
 		if err != nil {
 			if errors.As(err, &repoErrors.NotFound{}) {
 				a.apiError.FailWithMessage(w, apiErrors.Error{
@@ -82,10 +82,11 @@ func (a *APIInterface) RequireSession(next http.Handler) http.Handler {
 				Message:    "internal server error",
 				StatusCode: http.StatusInternalServerError,
 			})
+
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "sessionID", session)
+		ctx := context.WithValue(r.Context(), "sessionID", session.ID.String())
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
