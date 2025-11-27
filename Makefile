@@ -1,25 +1,20 @@
+ifeq (,$(wildcard .env))
+  $(info .env not found - creating from .env.example)
+  $(shell cp .env.example .env)
+endif
+
+include .env
+export $(shell sed 's/=.*//' .env)
+
 include db.mk
 
 # Ensure gotestsum is installed
 GOTESTSUM := $(shell command -v gotestsum 2> /dev/null)
-
 APP_NAME := FoodTinder
-
-ifneq (,$(wildcard .env))
-include .env
-export $(shell sed 's/=.*//' .env | xargs)
-endif
 
 .PHONY: up down restart ps build run lint tests-integration tests-unit tests install-gotestsum
 
-environment:
-	@if [ ! -f .env ]; then \
-		cp .env.example .env; \
-		echo ".env created from .env.example"; \
-	fi
-
-up: environment
-	@echo "running docker compose"
+up:
 	docker compose up -d
 
 down:
