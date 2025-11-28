@@ -45,6 +45,13 @@ make tests
 
 ![Voting Flow Diagram](./docs/test-result.png)
 
+## Documentation
+You can find swagger.yaml under /docs
+
+Run the following command to have swagger container
+````
+make swagger-ui
+````
 
 ## Deployment
 

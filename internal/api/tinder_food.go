@@ -18,7 +18,7 @@ func (a *APIInterface) CreateSession(w http.ResponseWriter, r *http.Request) {
 	sessionId, err := a.tinderFoodMgr.CreateSession(ctx)
 	if err != nil {
 		a.apiError.FailWithMessage(w, errors.Error{
-			Message:    "failed to encode response",
+			Message:    fmt.Sprintf("failed to create get session %s", err),
 			StatusCode: http.StatusInternalServerError,
 		})
 

@@ -3,3 +3,255 @@ info:
   title: Food Tinder API
   version: 1.0.0
   description: API to manage food swipe mechanism
+
+paths:
+  /session:
+    post:
+      summary: Create a new voting session
+      description: Creates a new session and returns its unique session ID.
+      tags:
+        - Sessions
+      responses:
+        "200":
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    format: uuid
+                    example: "8b682a66-26e4-4ac1-9bb4-a497422b130a"
+        "500":
+          description: Failed to create or encode the session response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "failed to encode response"
+                  statusCode:
+                    type: integer
+                    example: 500
+  /product-votes:
+    post:
+      summary: Create or update a product vote
+      description: |
+        Upserts (insert or update) a vote for a specific product within the user's session.
+        The `sessionId` is injected from middleware and not included in the request body.
+      tags:
+        - Votes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  description: Product UUID to vote on
+                  example: "b5e8d6c0-4f24-4b1f-8bc0-d0a8e02e9171"
+                productName:
+                  type: string
+                  nullable: true
+                  description: Optional product name
+                  example: "Margherita Pizza"
+                machineId:
+                  type: string
+                  nullable: true
+                  description: Optional machine identifier
+                  example: "f7332f6a-1e41-4ef6-b901-f3f0dc7b04b3"
+                liked:
+                  type: boolean
+                  description: Whether the user liked the product
+                  example: true
+              required:
+                - productId
+                - liked
+      responses:
+        "200":
+          description: Vote was successfully upserted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productId:
+                    type: string
+                    example: "b5e8d6c0-4f24-4b1f-8bc0-d0a8e02e9171"
+                  message:
+                    type: string
+                    example: "vote saved for product"
+        "400":
+          description: Bad request (invalid JSON or missing productId)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "productId is required"
+                  statusCode:
+                    type: integer
+                    example: 400
+        "500":
+          description: Failed to upsert vote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "failed to upsert vote, err:db timeout"
+                  statusCode:
+                    type: integer
+                    example: 500
+    get:
+      summary: Get all product votes for a session
+      description: |
+        Returns all product votes belonging to the current session.  
+        The session ID is extracted from middleware, not provided by the client.
+      tags:
+        - Votes
+      responses:
+        "200":
+          description: List of votes for the session
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GetSessionProductVotesResponse"
+              examples:
+                sample:
+                  value:
+                    - productId: "9f6ab56c-1d97-4b3b-9a64-26db0b9ddf22"
+                      productName: "Pepperoni Pizza"
+                      liked: true
+                      createdAt: "2025-11-27T21:15:23Z"
+                    - productId: "15b73ddb-44ae-49b5-b80f-75bc3723e8f1"
+                      productName: "Chicken Burrito"
+                      liked: false
+                      createdAt: "2025-11-27T21:16:10Z"
+        "400":
+          description: Invalid session ID or failure while fetching votes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidSessionId:
+                  value:
+                    message: "invalid session ID err: invalid UUID"
+                    statusCode: 400
+                fetchError:
+                  value:
+                    message: "failed to get product votes for session:123 err: db query failed"
+                    statusCode: 400
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /product-scores:
+    get:
+      summary: Get average scores for all products
+      description: |
+        Computes the average like score for each product across all sessions.
+      tags:
+        - Scores
+      responses:
+        "200":
+          description: List of average scores per product
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductScore"
+              examples:
+                sample:
+                  value:
+                    - productId: "b2cd51a8-8bb2-4f32-9f91-1b792fa04e9e"
+                      productName: "Cheeseburger"
+                      avgScore: 0.85
+                      totalVotes: 40
+                      likes: 34
+                    - productId: "a5f57e91-7a08-4ba2-bae0-0b6b9c804e32"
+                      productName: "Veggie Wrap"
+                      avgScore: 0.60
+                      totalVotes: 25
+                      likes: 15
+        "400":
+          description: Failed to retrieve average scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                dbError:
+                  value:
+                    message: "failed to get average score per product err: db query failed"
+                    statusCode: 400
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    GetSessionProductVotesResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: "9f6ab56c-1d97-4b3b-9a64-26db0b9ddf22"
+        productName:
+          type: string
+          nullable: true
+          example: "Pepperoni Pizza"
+        liked:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-27T21:15:23Z"
+    ProductScore:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        productName:
+          type: string
+        avgScore:
+          type: number
+          format: float
+        totalVotes:
+          type: integer
+        likes:
+          type: integer
+      example:
+        productId: "b2cd51a8-8bb2-4f32-9f91-1b792fa04e9e"
+        productName: "Cheeseburger"
+        avgScore: 0.85
+        totalVotes: 40
+        likes: 34
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        statusCode:
+          type: integer
