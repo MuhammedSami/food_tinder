@@ -57,6 +57,9 @@ make swagger-ui
 
 The backend APP is deployed on AWS EC2 instance on the following IP
 
+- This challenge actually fits serverless perfectly, I could use Lambda and Dynamo and I don't expect too much traffic.
+   I would prefer a lambda over EC2 but I could not do it vue the time I have and dont know if it is free tier eligible(didnt check) 
+
 ```
 http://13.60.225.102/
 ```
