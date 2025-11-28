@@ -17,107 +17,102 @@ import (
 
 func TestGetProductVotesPerSession(t *testing.T) {
 	cfg := defaultConfig()
-
 	db := storage.NewDb(cfg.DB)
-
 	a := app.NewApp(db, cfg)
+
+	db.Exec("DELETE FROM product_votes")
+	db.Exec("DELETE FROM sessions")
 
 	ts := httptest.NewServer(a.API.RegisterHandlers())
 	defer ts.Close()
 
-	// first create a unique session
-	sessionModel := models.Session{
-		ID: uuid.New(),
-	}
-	db.Create(&sessionModel)
+	// ----------------------------------------------------------------------
+	// Test Case 1 — Create first session and insert 3 votes
+	// ----------------------------------------------------------------------
+	t.Run("create session and insert votes", func(t *testing.T) {
+		session1 := models.Session{ID: uuid.New()}
+		db.Create(&session1)
 
-	productId1 := uuid.New()
-	productId2 := uuid.New()
-	productId3 := uuid.New()
+		// Test data
+		productId1 := uuid.New()
+		productId2 := uuid.New()
+		productId3 := uuid.New()
 
-	bodies := []map[string]interface{}{
-		{
-			"productId":   productId1.String(),
-			"productName": "name-1",
-			"liked":       false,
-		},
-		{
-			"productId":   productId2.String(),
-			"productName": "name-2",
-			"liked":       true,
-		},
-		{
-			"productId":   productId3.String(),
-			"productName": "name-3",
-			"liked":       false,
-		},
-	}
+		bodies := []map[string]interface{}{
+			{"productId": productId1.String(), "productName": "name-1", "liked": false},
+			{"productId": productId2.String(), "productName": "name-2", "liked": true},
+			{"productId": productId3.String(), "productName": "name-3", "liked": false},
+		}
 
-	for _, body := range bodies {
-		payload, _ := json.Marshal(body)
+		for _, b := range bodies {
+			p, _ := json.Marshal(b)
+			upsert(ts.URL, p, session1.ID.String(), t)
+		}
 
-		upsert(ts.URL, payload, sessionModel.ID.String(), t)
-	}
-
-	// after voting for products lets get votes and check count
-	votes := getProductVotesPerSession(t, ts.URL, sessionModel.ID.String())
-
-	assert.Equal(t, len(bodies), len(votes))
-
-	// lets now try to update one of our product with same session and recheck
-	payload, _ := json.Marshal(map[string]interface{}{
-		"productId":   productId2.String(),
-		"productName": "name-2",
-		"liked":       false,
+		votes := getProductVotesPerSession(t, ts.URL, session1.ID.String())
+		assert.Equal(t, len(bodies), len(votes), "expected initial vote count == 3")
 	})
-	upsert(ts.URL, payload, sessionModel.ID.String(), t)
 
-	// we recheck the count it should still be the same, session didnt change
-	votes = getProductVotesPerSession(t, ts.URL, sessionModel.ID.String())
+	// ----------------------------------------------------------------------
+	// Test Case 2 — Update one product with the same session (count should stay same)
+	// ----------------------------------------------------------------------
+	t.Run("update existing product vote but keep same count", func(t *testing.T) {
+		session1 := models.Session{}
+		db.First(&session1) // fetch previous session
 
-	assert.Equal(t, len(bodies), len(votes))
+		productId2 := "" // find the productID by reading existing votes
+		votes := getProductVotesPerSession(t, ts.URL, session1.ID.String())
+		productId2 = votes[1]["productId"].(string)
 
-	// lets create a second session id and retry for both sessions
-
-	// first create a unique session
-	sessionModel2 := models.Session{
-		ID: uuid.New(),
-	}
-	db.Create(&sessionModel2)
-
-	bodies2 := []map[string]interface{}{
-		{
-			"productId":   productId1.String(),
-			"productName": "name-1",
-			"liked":       false,
-		},
-		{
-			"productId":   productId2.String(),
+		payload, _ := json.Marshal(map[string]interface{}{
+			"productId":   productId2,
 			"productName": "name-2",
-			"liked":       true,
-		},
-		{
-			"productId":   productId3.String(),
-			"productName": "name-3",
 			"liked":       false,
-		},
-	}
+		})
 
-	for _, body2 := range bodies2 {
-		p, _ := json.Marshal(body2)
+		upsert(ts.URL, payload, session1.ID.String(), t)
 
-		upsert(ts.URL, p, sessionModel2.ID.String(), t)
-	}
+		votesAfter := getProductVotesPerSession(t, ts.URL, session1.ID.String())
+		assert.Equal(t, 3, len(votesAfter), "count must remain the same after update")
+	})
 
-	// after voting for products with a separate session lets get votes and check count
-	votesForSession2 := getProductVotesPerSession(t, ts.URL, sessionModel2.ID.String())
+	// ----------------------------------------------------------------------
+	// Test Case 3 — Create a second session and insert 3 votes
+	// ----------------------------------------------------------------------
+	t.Run("create second session and insert votes", func(t *testing.T) {
+		session2 := models.Session{ID: uuid.New()}
+		db.Create(&session2)
 
-	assert.Equal(t, len(bodies2), len(votesForSession2))
+		// Reuse product IDs for test consistency
+		productId1 := uuid.New()
+		productId2 := uuid.New()
+		productId3 := uuid.New()
 
-	// lets recheck for previous session again
-	votes = getProductVotesPerSession(t, ts.URL, sessionModel.ID.String())
+		bodies2 := []map[string]interface{}{
+			{"productId": productId1.String(), "productName": "name-1", "liked": false},
+			{"productId": productId2.String(), "productName": "name-2", "liked": true},
+			{"productId": productId3.String(), "productName": "name-3", "liked": false},
+		}
 
-	assert.Equal(t, len(bodies), len(votes))
+		for _, b := range bodies2 {
+			p, _ := json.Marshal(b)
+			upsert(ts.URL, p, session2.ID.String(), t)
+		}
+
+		votes := getProductVotesPerSession(t, ts.URL, session2.ID.String())
+		assert.Equal(t, 3, len(votes), "second session must also have 3 votes")
+	})
+
+	// ----------------------------------------------------------------------
+	// Test Case 4 — Ensure first session still has original vote count
+	// ----------------------------------------------------------------------
+	t.Run("ensure first session unchanged after second session votes", func(t *testing.T) {
+		var session1 models.Session
+		db.First(&session1)
+
+		votes := getProductVotesPerSession(t, ts.URL, session1.ID.String())
+		assert.Equal(t, 3, len(votes), "first session must remain unchanged")
+	})
 }
 
 func upsert(url string, payload []byte, sessionId string, t *testing.T) {
