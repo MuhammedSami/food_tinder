@@ -5,7 +5,7 @@ This backend is designed to support a lightweight, anonymous, swipe-based produc
 
 ## How users access the voting flow
 
-- Users are shown a QR code or given a link from via which they can be redirected to a web-app.
+- Users are shown a QR code or given a link via which they can be redirected to a web-app.
 
 ## Usage Scenario
 
@@ -45,7 +45,7 @@ make tests
 
 ![Voting Flow Diagram](./docs/test-result.png)
 
-## Documentation
+## OpenAPI Documentation
 You can find swagger.yaml under /docs
 
 Run the following command to have swagger container
