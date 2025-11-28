@@ -26,9 +26,6 @@ func TestGetProductVotesPerSession(t *testing.T) {
 	ts := httptest.NewServer(a.API.RegisterHandlers())
 	defer ts.Close()
 
-	// ----------------------------------------------------------------------
-	// Test Case 1 — Create first session and insert 3 votes
-	// ----------------------------------------------------------------------
 	t.Run("create session and insert votes", func(t *testing.T) {
 		session1 := models.Session{ID: uuid.New()}
 		db.Create(&session1)
@@ -53,9 +50,6 @@ func TestGetProductVotesPerSession(t *testing.T) {
 		assert.Equal(t, len(bodies), len(votes), "expected initial vote count == 3")
 	})
 
-	// ----------------------------------------------------------------------
-	// Test Case 2 — Update one product with the same session (count should stay same)
-	// ----------------------------------------------------------------------
 	t.Run("update existing product vote but keep same count", func(t *testing.T) {
 		session1 := models.Session{}
 		db.First(&session1) // fetch previous session
@@ -76,9 +70,6 @@ func TestGetProductVotesPerSession(t *testing.T) {
 		assert.Equal(t, 3, len(votesAfter), "count must remain the same after update")
 	})
 
-	// ----------------------------------------------------------------------
-	// Test Case 3 — Create a second session and insert 3 votes
-	// ----------------------------------------------------------------------
 	t.Run("create second session and insert votes", func(t *testing.T) {
 		session2 := models.Session{ID: uuid.New()}
 		db.Create(&session2)
@@ -103,9 +94,6 @@ func TestGetProductVotesPerSession(t *testing.T) {
 		assert.Equal(t, 3, len(votes), "second session must also have 3 votes")
 	})
 
-	// ----------------------------------------------------------------------
-	// Test Case 4 — Ensure first session still has original vote count
-	// ----------------------------------------------------------------------
 	t.Run("ensure first session unchanged after second session votes", func(t *testing.T) {
 		var session1 models.Session
 		db.First(&session1)
