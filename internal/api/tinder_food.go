@@ -120,7 +120,7 @@ func (a *APIInterface) GetVotesForSession(w http.ResponseWriter, r *http.Request
 			ProductId:   v.ProductID.String(),
 			ProductName: v.ProductName,
 			Liked:       v.Liked,
-			CreatedAt:   v.CreatedAt.String(),
+			CreatedAt:   v.CreatedAt,
 		})
 	}
 

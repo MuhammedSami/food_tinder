@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type SessionResponse struct {
 	SessionId string `json:"sessionId"`
 }
@@ -18,8 +20,8 @@ type UpsertProductVoteResponse struct {
 }
 
 type GetSessionProductVotesResponse struct {
-	ProductId   string  `json:"productId"`
-	ProductName *string `json:"productName"`
-	Liked       bool    `json:"liked"`
-	CreatedAt   string  `json:"createdAt"`
+	ProductId   string    `json:"productId"`
+	ProductName *string   `json:"productName"`
+	Liked       bool      `json:"liked"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
