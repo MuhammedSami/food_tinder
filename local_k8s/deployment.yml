@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-food-tinder
+  labels:
+    app: k8s-food-tinder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-food-tinder
+  template:
+    metadata:
+      name: k8s-food-tinder
+      labels:
+        app: k8s-food-tinder
+    spec:
+      containers:
+        - name: k8s-food-tinder
+          image: muhammed2534/foodtinder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: "postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "myuser"
+            - name: DB_PASS
+              value: "mypass"
+            - name: DB_NAME
+              value: "mydb"
+      restartPolicy: Always
+      
