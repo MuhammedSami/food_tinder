@@ -2,9 +2,9 @@ package tests
 
 import (
 	"encoding/json"
-	"foodjiassignment/internal/app"
-	"foodjiassignment/internal/repository/models"
-	"foodjiassignment/internal/storage"
+	"foodtinder/internal/app"
+	"foodtinder/internal/repository/models"
+	"foodtinder/internal/storage"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

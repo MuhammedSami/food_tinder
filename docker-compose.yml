@@ -1,4 +1,15 @@
 services:
+  food-tinder-app:
+    image: muhammed2534/foodtinder
+    ports:
+      - "8080:8080"
+    environment:
+      DB_USER: ${DB_NAME}
+      DB_PASS: ${DB_USER}
+      DB_NAME: ${DB_PASS}
+    networks:
+      - food-tinder-network
+
   pgsql:
     image: postgres:15-alpine
     ports:
@@ -9,6 +20,32 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - food-tinder-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - food-tinder-network
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3000:3000"
+    networks:
+      - food-tinder-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
 
 volumes:
   pgdata:
+  grafana-storage:
+
+networks:
+  food-tinder-network:

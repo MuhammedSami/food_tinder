@@ -2,7 +2,7 @@ package session
 
 import (
 	"fmt"
-	"foodjiassignment/internal/repository/models"
+	"foodtinder/internal/repository/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

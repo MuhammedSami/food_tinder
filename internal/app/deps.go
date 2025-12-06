@@ -2,10 +2,10 @@ package app
 
 import (
 	"fmt"
-	"foodjiassignment/config"
-	tinderfoodMgr "foodjiassignment/internal/business/tinder_food_manager"
-	productRepo "foodjiassignment/internal/repository/product"
-	sessionRepo "foodjiassignment/internal/repository/session"
+	"foodtinder/config"
+	tinderfoodMgr "foodtinder/internal/business/tinder_food_manager"
+	productRepo "foodtinder/internal/repository/product"
+	sessionRepo "foodtinder/internal/repository/session"
 	"github.com/redis/go-redis/v9"
 )
 

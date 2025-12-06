@@ -4,8 +4,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"foodjiassignment/internal/api/errors"
-	"foodjiassignment/internal/api/models"
+	"foodtinder/internal/api/errors"
+	"foodtinder/internal/api/models"
 	"github.com/google/uuid"
 	"net/http"
 )

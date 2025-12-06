@@ -3,8 +3,8 @@ package tinderfood
 import (
 	"context"
 	"fmt"
-	apiModels "foodjiassignment/internal/api/models"
-	"foodjiassignment/internal/repository/models"
+	apiModels "foodtinder/internal/api/models"
+	"foodtinder/internal/repository/models"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 )

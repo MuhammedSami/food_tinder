@@ -3,8 +3,9 @@ package api
 import (
 	"context"
 	"errors"
-	apiErrors "foodjiassignment/internal/api/errors"
-	repoErrors "foodjiassignment/internal/repository/errors"
+	apiErrors "foodtinder/internal/api/errors"
+	repoErrors "foodtinder/internal/repository/errors"
+	chiprom "github.com/766b/chi-prometheus"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
@@ -33,6 +34,9 @@ func NewApi(
 
 func (a *APIInterface) RegisterHandlers() http.Handler {
 	r := chi.NewRouter()
+
+	metricMiddleware := chiprom.NewMiddleware("food_tinder")
+	r.Use(metricMiddleware)
 
 	r.Post("/sessions", a.CreateSession)
 	r.Get("/product-scores", a.GetAverageScores)

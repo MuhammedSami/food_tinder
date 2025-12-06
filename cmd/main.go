@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"foodjiassignment/config"
-	"foodjiassignment/internal/app"
-	"foodjiassignment/internal/storage"
+	"foodtinder/config"
+	"foodtinder/internal/app"
+	"foodtinder/internal/storage"
 	"log"
 )
 

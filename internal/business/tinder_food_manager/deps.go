@@ -1,7 +1,7 @@
 package tinderfood
 
 import (
-	"foodjiassignment/internal/repository/models"
+	"foodtinder/internal/repository/models"
 	"github.com/google/uuid"
 	"time"
 )

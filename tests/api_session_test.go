@@ -3,9 +3,9 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
-	"foodjiassignment/config"
-	"foodjiassignment/internal/app"
-	"foodjiassignment/internal/storage"
+	"foodtinder/config"
+	"foodtinder/internal/app"
+	"foodtinder/internal/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"

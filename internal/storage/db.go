@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"foodjiassignment/config"
+	"foodtinder/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

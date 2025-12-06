@@ -3,8 +3,8 @@ package session
 import (
 	"errors"
 	"fmt"
-	modelsErr "foodjiassignment/internal/repository/errors"
-	"foodjiassignment/internal/repository/models"
+	modelsErr "foodtinder/internal/repository/errors"
+	"foodtinder/internal/repository/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
