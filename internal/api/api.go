@@ -8,6 +8,7 @@ import (
 	chiprom "github.com/766b/chi-prometheus"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redis/go-redis/v9"
 	"net/http"
 )
@@ -37,6 +38,8 @@ func (a *APIInterface) RegisterHandlers() http.Handler {
 
 	metricMiddleware := chiprom.NewMiddleware("food_tinder")
 	r.Use(metricMiddleware)
+
+	r.Handle("/metrics", promhttp.Handler())
 
 	r.Post("/sessions", a.CreateSession)
 	r.Get("/product-scores", a.GetAverageScores)

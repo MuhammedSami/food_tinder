@@ -34,6 +34,8 @@ func convertResponseIntoErrorResponse(t *testing.T, resp *http.Response) errors.
 }
 
 func TestProductVoteAPI(t *testing.T) {
+	ResetPrometheusRegistry()
+
 	cfg := defaultConfig()
 
 	db := storage.NewDb(cfg.DB)

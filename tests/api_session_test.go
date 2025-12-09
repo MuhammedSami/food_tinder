@@ -30,6 +30,8 @@ func defaultConfig() *config.Config {
 }
 
 func TestAPIEndpoints(t *testing.T) {
+	ResetPrometheusRegistry()
+
 	cfg := defaultConfig()
 
 	db := storage.NewDb(cfg.DB)

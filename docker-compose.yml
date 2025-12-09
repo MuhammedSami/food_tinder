@@ -2,11 +2,12 @@ services:
   food-tinder-app:
     image: muhammed2534/foodtinder
     ports:
-      - "8080:8080"
+      - "8080:80"
     environment:
-      DB_USER: ${DB_NAME}
-      DB_PASS: ${DB_USER}
-      DB_NAME: ${DB_PASS}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
     networks:
       - food-tinder-network
 

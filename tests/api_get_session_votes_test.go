@@ -16,6 +16,8 @@ import (
 )
 
 func TestGetProductVotesPerSession(t *testing.T) {
+	ResetPrometheusRegistry()
+
 	cfg := defaultConfig()
 	db := storage.NewDb(cfg.DB)
 	a := app.NewApp(db, cfg)

@@ -6,6 +6,7 @@ import (
 	"foodtinder/internal/repository/models"
 	"foodtinder/internal/storage"
 	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -14,7 +15,14 @@ import (
 	"testing"
 )
 
+func ResetPrometheusRegistry() {
+	prometheus.DefaultRegisterer = prometheus.NewRegistry()
+	prometheus.DefaultGatherer = prometheus.NewRegistry()
+}
+
 func TestGetAverageScores(t *testing.T) {
+	ResetPrometheusRegistry()
+
 	cfg := defaultConfig()
 	db := storage.NewDb(cfg.DB)
 	a := app.NewApp(db, cfg)
